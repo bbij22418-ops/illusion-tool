@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chhupa Number Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #0b0d10;
+    --panel: #14171c;
+    --panel-2: #1b1f26;
+    --line: #262b33;
+    --ink: #eef1f5;
+    --ink-dim: #8992a1;
+    --accent: #ffb238;
+    --ok: #57d18a;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #171b21 0%, transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height:100vh;
+    padding: 28px 18px 60px;
+  }
+  .wrap{ max-width: 980px; margin: 0 auto; }
+
+  header{ margin-bottom: 26px; }
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{
+    content:""; width:7px; height:7px; background:var(--accent); display:inline-block;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+  h1{
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    line-height: 1.08;
+    margin: 10px 0 6px;
+    letter-spacing: -0.02em;
+  }
+  h1 span{ color: var(--accent); }
+  .sub{ color: var(--ink-dim); font-size: 15px; max-width: 560px; line-height:1.5; }
+
+  .grid{
+    display:grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 780px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .field{ margin-bottom: 18px; }
+  .field label{
+    display:block;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+  .field .val{ color: var(--accent); }
+
+  input[type="text"]{
+    width:100%;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    padding: 12px 14px;
+    border-radius: 10px;
+    letter-spacing: 0.03em;
+  }
+  input[type="text"]:focus{ outline:none; border-color: var(--accent); }
+
+  input[type="range"]{
+    width:100%;
+    accent-color: var(--accent);
+    background: transparent;
+  }
+
+  select{
+    width:100%;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+
+  button{
+    width:100%;
+    background: var(--accent);
+    color: #1a1204;
+    border: none;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 13px 16px;
+    border-radius: 10px;
+    cursor:pointer;
+    margin-top: 4px;
+    transition: transform 0.08s ease, filter 0.15s ease;
+  }
+  button:hover{ filter: brightness(1.08); }
+  button:active{ transform: scale(0.98); }
+
+  button.secondary{
+    background: var(--panel-2);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    font-weight: 500;
+    margin-top: 10px;
+  }
+
+  .hint{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  .canvases{
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+  }
+  .canvas-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .canvas-card .label{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 10px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+  }
+  .canvas-card .label .tag{
+    color: var(--ok);
+    font-size: 10px;
+    border: 1px solid var(--ok);
+    padding: 2px 7px;
+    border-radius: 100px;
+  }
+  canvas{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius: 8px;
+    background:#fff;
+  }
+
+  .note{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+  }
+  .note b{ color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Hidden-luminance illusion lab</div>
+    <h1>Apna <span>chhupa hua number</span><br>zigzag image banao</h1>
+    <div class="sub">Koi bhi number ya word likho — wo ek high-frequency chevron pattern ke andar chhup jayega. Paas se sirf texture dikhega, aankh sikhudne ya door le jaane par number ubhar aayega.</div>
+  </header>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="field">
+        <label>Chhupane wala text</label>
+        <input type="text" id="hiddenText" value="42" maxlength="4">
+      </div>
+
+      <div class="field">
+        <label>Pattern type</label>
+        <select id="patternType">
+          <option value="chevron">Chevron / Zigzag</option>
+          <option value="stripes">Seedhi lines</option>
+          <option value="dots">Dots grid</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Line density: <span class="val" id="densityVal">18</span> px</label>
+        <input type="range" id="density" min="10" max="28" value="18">
+      </div>
+
+      <div class="field">
+        <label>Hidden strength: <span class="val" id="strengthVal">45</span>%</label>
+        <input type="range" id="strength" min="15" max="75" value="45">
+        <div class="hint">Kam rakho toh paas se bilkul invisible, zyada karoge toh thoda jaldi dikhne lagega.</div>
+      </div>
+
+      <div class="field">
+        <label>Text size: <span class="val" id="sizeVal">60</span>%</label>
+        <input type="range" id="textSize" min="35" max="80" value="60">
+      </div>
+
+      <button id="generateBtn">Generate karo</button>
+      <button class="secondary" id="downloadBtn">Image download karo</button>
+      <div class="hint" id="downloadHint">Naye tab mein khulega — image ko 1-2 second dabaye rakho (long-press) aur "Save Image" choose karo.</div>
+
+      <div class="note">
+        <b>Kaam kaise karta hai:</b> Text ka heavily-blurred grayscale mask nikalte hain, phir zigzag pattern ke black/white pixels ka ratio us mask ke hisaab se <b>bahut halka</b> shift karte hain (kuch % hi) — isliye paas se texture uniform dikhta hai. Blur/distance par aankh fine detail resolve nahi kar pati, sirf average luminance dikhti hai — wahi number reveal karta hai.
+      </div>
+    </div>
+
+    <div class="canvases">
+      <div class="canvas-card">
+        <div class="label">Final image (isko share karo) <span class="tag">paas se dekho</span></div>
+        <canvas id="mainCanvas" width="640" height="640"></canvas>
+      </div>
+      <div class="canvas-card">
+        <div class="label">Preview — blur / door se dekhne jaisa <span class="tag">reveal check</span></div>
+        <canvas id="previewCanvas" width="640" height="640"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const mainCanvas = document.getElementById('mainCanvas');
+const previewCanvas = document.getElementById('previewCanvas');
+const mctx = mainCanvas.getContext('2d');
+const pctx = previewCanvas.getContext('2d');
+
+const hiddenTextInput = document.getElementById('hiddenText');
+const patternTypeSel = document.getElementById('patternType');
+const densityInput = document.getElementById('density');
+const strengthInput = document.getElementById('strength');
+const textSizeInput = document.getElementById('textSize');
+
+const densityVal = document.getElementById('densityVal');
+const strengthVal = document.getElementById('strengthVal');
+const sizeVal = document.getElementById('sizeVal');
+
+const SIZE = 640;
+const MASK_BLUR = 20;
+
+function buildMaskData(text, sizePct){
+  const off = document.createElement('canvas');
+  off.width = SIZE; off.height = SIZE;
+  const octx = off.getContext('2d');
+  octx.fillStyle = '#fff';
+  octx.fillRect(0,0,SIZE,SIZE);
+  octx.fillStyle = '#000';
+  const fontSize = Math.floor(SIZE * (sizePct/100) * (text.length > 2 ? 2.4/text.length : 1));
+  octx.font = `700 ${fontSize}px 'Space Grotesk', sans-serif`;
+  octx.textAlign = 'center';
+  octx.textBaseline = 'middle';
+  octx.fillText(text, SIZE/2, SIZE/2 + fontSize*0.03);
+
+  const blurred = document.createElement('canvas');
+  blurred.width = SIZE; blurred.height = SIZE;
+  const bctx = blurred.getContext('2d');
+  bctx.filter = `blur(${MASK_BLUR}px)`;
+  bctx.drawImage(off, 0, 0);
+  bctx.filter = 'none';
+
+  const imgData = bctx.getImageData(0,0,SIZE,SIZE);
+  // precompute mean for centering the shift
+  let sum = 0;
+  const n = SIZE*SIZE;
+  const strengthArr = new Float32Array(n);
+  for(let i=0;i<n;i++){
+    const v = imgData.data[i*4];
+    const s = 1 - v/255;
+    strengthArr[i] = s;
+    sum += s;
+  }
+  const mean = sum / n;
+  return { strengthArr, mean };
+}
+
+function phaseFor(type, x, y, density){
+  if(type === 'chevron'){
+    const period = density*2;
+    const rowInPeriod = ((y % period) + period) % period;
+    const triangle = rowInPeriod < density ? rowInPeriod/density : 2 - rowInPeriod/density;
+    const wave = Math.sin((x + triangle*density*1.1) * Math.PI / density);
+    return (wave + 1) / 2;
+  } else if(type === 'stripes'){
+    const wave = Math.sin(x * Math.PI / density);
+    return (wave + 1) / 2;
+  } else {
+    const period = density;
+    const cx = Math.round(x/period)*period;
+    const cy = Math.round(y/period)*period;
+    const d = Math.hypot(x-cx, y-cy);
+    return 1 - Math.min(1, d / (period*0.62));
+  }
+}
+
+// map UI strength (15-75) to a subtle max shift (0.05 - 0.22)
+function mapStrength(uiStrength){
+  const t = (uiStrength - 15) / (75 - 15);
+  return 0.05 + t * (0.22 - 0.05);
+}
+
+function drawPattern(ctx, maskInfo, opts){
+  const { density, uiStrength, type } = opts;
+  const maxShift = mapStrength(uiStrength);
+  const noiseAmp = 0.10;
+  const { strengthArr, mean } = maskInfo;
+
+  const img = ctx.createImageData(SIZE, SIZE);
+  const data = img.data;
+
+  for(let y=0; y<SIZE; y++){
+    for(let x=0; x<SIZE; x++){
+      const phase = phaseFor(type, x, y, density);
+      const idxMask = y*SIZE + x;
+      const shift = (strengthArr[idxMask] - mean) * maxShift;
+      const noise = (Math.random() - 0.5) * noiseAmp;
+      const threshold = 0.5 - shift + noise;
+
+      const idx = idxMask * 4;
+      const on = phase > threshold;
+      const val = on ? 20 : 245;
+      data[idx] = val; data[idx+1] = val; data[idx+2] = val; data[idx+3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+function generate(){
+  const text = (hiddenTextInput.value || '').trim() || '42';
+  const density = parseInt(densityInput.value, 10);
+  const uiStrength = parseInt(strengthInput.value, 10);
+  const sizePct = parseInt(textSizeInput.value, 10);
+  const type = patternTypeSel.value;
+
+  densityVal.textContent = density;
+  strengthVal.textContent = uiStrength;
+  sizeVal.textContent = sizePct;
+
+  const maskInfo = buildMaskData(text, sizePct);
+  drawPattern(mctx, maskInfo, { density, uiStrength, type });
+
+  pctx.clearRect(0,0,SIZE,SIZE);
+  pctx.filter = 'blur(9px)';
+  pctx.drawImage(mainCanvas, 0, 0);
+  pctx.filter = 'none';
+}
+
+document.getElementById('generateBtn').addEventListener('click', generate);
+
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  mainCanvas.toBlob((blob) => {
+    if(!blob){ return; }
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank');
+    if(!win){
+      // popup blocked fallback: try direct anchor download
+      const link = document.createElement('a');
+      link.download = 'chhupa-number.png';
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+  }, 'image/png');
+});
+
+[densityInput, strengthInput, textSizeInput, patternTypeSel].forEach(el=>{
+  el.addEventListener('input', generate);
+});
+hiddenTextInput.addEventListener('keyup', (e)=>{ if(e.key === 'Enter') generate(); });
+
+generate();
+</script>
+</body>
+</html>
